@@ -1,0 +1,21 @@
+from django import forms
+from django.contrib.auth import get_user_model
+from django.contrib.auth.forms import UserCreationForm
+
+User = get_user_model()
+
+
+class CustomUserCreationForm(UserCreationForm):
+    """Форма регистрации: стандартные поля + имя, фамилия, email."""
+
+    class Meta(UserCreationForm.Meta):
+        model = User
+        fields = ('username', 'first_name', 'last_name', 'email')
+
+
+class ProfileEditForm(forms.ModelForm):
+    """Форма редактирования собственного профиля."""
+
+    class Meta:
+        model = User
+        fields = ('username', 'first_name', 'last_name', 'email')
