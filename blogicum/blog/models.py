@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.db import models
+from django.urls import reverse
 
 from .constants import (
     CATEGORY_STR_MAX_LENGTH,
@@ -81,7 +82,6 @@ class Post(IsPublishedCreatedModel):
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name='posts',
         verbose_name='Автор публикации',
     )
     location = models.ForeignKey(
@@ -89,14 +89,12 @@ class Post(IsPublishedCreatedModel):
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name='posts',
         verbose_name='Местоположение',
     )
     category = models.ForeignKey(
         Category,
         on_delete=models.SET_NULL,
         null=True,
-        related_name='posts',
         verbose_name='Категория',
     )
     image = models.ImageField(
@@ -109,9 +107,13 @@ class Post(IsPublishedCreatedModel):
         verbose_name = 'публикация'
         verbose_name_plural = 'Публикации'
         ordering = ['-pub_date']
+        default_related_name = 'posts'
 
     def __str__(self):
         return self.title[:POST_STR_MAX_LENGTH]
+
+    def get_absolute_url(self):
+        return reverse('blog:post_detail', kwargs={'post_id': self.pk})
 
 
 class Comment(IsPublishedCreatedModel):
@@ -137,4 +139,8 @@ class Comment(IsPublishedCreatedModel):
         ordering = ['created_at']
 
     def __str__(self):
-        return self.text[:POST_STR_MAX_LENGTH]
+        return (
+            f'Комментарий автора {self.author.username} '
+            f'к посту {self.post.title[:POST_STR_MAX_LENGTH]}, '
+            f'текст: {self.text[:POST_STR_MAX_LENGTH]}'
+        )

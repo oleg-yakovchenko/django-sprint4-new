@@ -23,13 +23,15 @@ class PostQuerySet(models.QuerySet):
         )
 
     def visible_for(self, user):
-        """Автор видит и свои, остальные — только published."""
-        if user.is_authenticated:
-            return self.with_related().filter(
-                Q(
-                    is_published=True,
-                    category__is_published=True,
-                    pub_date__lte=timezone.now(),
-                ) | Q(author=user)
-            )
-        return self.published()
+        """Автор видит и свои, остальные — только published.
+
+        Для анонима `user.id` — None, поэтому `author_id=None`
+        не даёт совпадений, и остаётся ветка published.
+        """
+        return self.with_related().filter(
+            Q(
+                is_published=True,
+                category__is_published=True,
+                pub_date__lte=timezone.now(),
+            ) | Q(author_id=user.id)
+        )

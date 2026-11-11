@@ -1,17 +1,14 @@
 from django.contrib.auth.decorators import login_required
-from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, redirect, render
 
-from .constants import POSTS_BY_PAGE
 from .forms import CommentForm, PostForm
 from .models import Category, Comment, Post
+from .service import paginate_queryset
 
 
 def index(request):
     post_queryset = Post.objects.published()
-    page_obj = Paginator(post_queryset, POSTS_BY_PAGE).get_page(
-        request.GET.get('page')
-    )
+    page_obj = paginate_queryset(request, post_queryset)
     return render(
         request,
         'blog/index.html',
@@ -26,9 +23,7 @@ def category_posts(request, category_slug):
         is_published=True,
     )
     post_queryset = category.posts.published()
-    page_obj = Paginator(post_queryset, POSTS_BY_PAGE).get_page(
-        request.GET.get('page')
-    )
+    page_obj = paginate_queryset(request, post_queryset)
     return render(
         request,
         'blog/category.html',

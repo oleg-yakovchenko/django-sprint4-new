@@ -1,24 +1,20 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
-from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, redirect, render
 
-from blog.constants import POSTS_BY_PAGE
+from blog.service import paginate_queryset
 
-from .forms import CustomUserCreationForm, ProfileEditForm
+from .forms import ProfileEditForm, RegistrationForm
 
 User = get_user_model()
 
 
 def register(request):
     """Регистрация. После успеха — редирект на главную."""
-    if request.method == 'POST':
-        form = CustomUserCreationForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('blog:index')
-    else:
-        form = CustomUserCreationForm()
+    form = RegistrationForm(request.POST or None)
+    if form.is_valid():
+        form.save()
+        return redirect('blog:index')
     return render(
         request,
         'registration/registration_form.html',
@@ -37,9 +33,7 @@ def profile(request, username):
         post_queryset = profile_user.posts.with_related()
     else:
         post_queryset = profile_user.posts.published()
-    page_obj = Paginator(post_queryset, POSTS_BY_PAGE).get_page(
-        request.GET.get('page')
-    )
+    page_obj = paginate_queryset(request, post_queryset)
     return render(
         request,
         'blog/profile.html',
@@ -51,11 +45,8 @@ def profile(request, username):
 def edit_profile(request):
     """Редактирование собственного профиля. Шаблон — blog/user.html."""
     user = request.user
-    if request.method == 'POST':
-        form = ProfileEditForm(request.POST, instance=user)
-        if form.is_valid():
-            form.save()
-            return redirect('blog:profile', username=user.username)
-    else:
-        form = ProfileEditForm(instance=user)
+    form = ProfileEditForm(request.POST or None, instance=user)
+    if form.is_valid():
+        user = form.save()
+        return redirect('blog:profile', username=user.username)
     return render(request, 'blog/user.html', {'form': form})

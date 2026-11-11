@@ -5,7 +5,7 @@ from django.contrib.auth.forms import UserCreationForm
 User = get_user_model()
 
 
-class CustomUserCreationForm(UserCreationForm):
+class RegistrationForm(UserCreationForm):
     """Форма регистрации: стандартные поля + имя, фамилия, email."""
 
     class Meta(UserCreationForm.Meta):
