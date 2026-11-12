@@ -1,7 +1,9 @@
 from django.contrib import admin
 from django.utils.html import format_html
 
+from .constants import COMMENT_TEXT_PREVIEW_LENGTH
 from .models import Category, Comment, Location, Post
+from .utils import doc
 
 
 @admin.register(Category)
@@ -87,9 +89,12 @@ class CommentAdmin(admin.ModelAdmin):
         }),
     )
 
+    @doc(
+        f'Краткое превью текста комментария '
+        f'(первые {COMMENT_TEXT_PREVIEW_LENGTH} символов).'
+    )
     @admin.display(description='Текст')
     def text_preview(self, obj):
-        """Первые 60 символов текста — чтобы список был компактным."""
-        if len(obj.text) > 60:
-            return f'{obj.text[:60]}…'
+        if len(obj.text) > COMMENT_TEXT_PREVIEW_LENGTH:
+            return f'{obj.text[:COMMENT_TEXT_PREVIEW_LENGTH]}…'
         return obj.text

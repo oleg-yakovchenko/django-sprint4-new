@@ -3,6 +3,7 @@ CATEGORY_STR_MAX_LENGTH = 50
 LOCATION_STR_MAX_LENGTH = 50
 POST_STR_MAX_LENGTH = 50
 POSTS_BY_PAGE = 10
+COMMENT_TEXT_PREVIEW_LENGTH = 60      # ← новая константа
 
 IS_PUBLISHED_HELP_TEXT = 'Снимите галочку, чтобы скрыть публикацию.'
 SLUG_HELP_TEXT = (
