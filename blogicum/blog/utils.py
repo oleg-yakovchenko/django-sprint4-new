@@ -1,5 +1,5 @@
 def doc(docstring):
-    """Декоратор: устанавливает docstring функции (см. StackOverflow 36091548)."""
+    """Декоратор: устанавливает docstring функции"""
     def decorator(func):
         func.__doc__ = docstring
         return func

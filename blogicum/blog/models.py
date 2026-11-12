@@ -141,6 +141,6 @@ class Comment(IsPublishedCreatedModel):
     def __str__(self):
         return (
             f'Комментарий автора {self.author.username} '
-            f'к посту {self.post.title[:POST_STR_MAX_LENGTH]}, '
+            f'к посту {self.post}, '
             f'текст: {self.text[:POST_STR_MAX_LENGTH]}'
         )
